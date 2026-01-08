@@ -152,7 +152,7 @@ bool Sudoku::CheckGrid(SudokuGrid& Sgrid) {
 
 // Сохранение сетки в файл
 void Sudoku::SaveGrid(SudokuGrid& Sgrid) {
-	std::string filename = "Project\\Save.txt";
+	std::string filename = "Save.txt";
 	std::ofstream file(filename);
 	if (!file.is_open()) {
 		std::cerr << "Ошибка открытия файла " << filename << std::endl;

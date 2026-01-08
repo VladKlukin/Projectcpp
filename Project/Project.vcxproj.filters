@@ -34,7 +34,7 @@
     <Text Include="Load.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
-    <Text Include="Save.txt">
+    <Text Include="SaveFile.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
   </ItemGroup>
