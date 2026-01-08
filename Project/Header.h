@@ -31,5 +31,5 @@ struct Sudoku {
 	bool GenerateSudoku(SudokuGrid& Sgrid);
 	bool IsGridEmpty(const SudokuGrid& Sgrid);
 };
-void PrintSolvedSudoku(SudokuGrid& grid);
+
 void menu(SudokuGrid& grid);

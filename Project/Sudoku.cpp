@@ -9,12 +9,12 @@
 bool Sudoku::CanPlace(SudokuGrid& Sgrid, int row, int col, int num) {
 	// Проверка границ индексов
 	if (row < 0 || row > 8 || col < 0 || col > 8) {
-		throw std::out_of_range("Индексы строки и столбца должны быть в диапазоне 0-8");
+		std::cerr << "Индексы строки и столбца должны быть в диапазоне 0-8" << std::endl;
 	}
 
 	// Проверка допустимого значения числа
 	if (num < 1 || num > 9) {
-		throw std::invalid_argument("Число должно быть в диапазоне 1-9");
+		std::cerr << "Число должно быть в диапазоне 1-9" << std::endl;
 	}
 
 	for (int x = 0; x < 9; x++) {
@@ -81,7 +81,7 @@ CellPosition Sudoku::getNextEmptyCell(const SudokuGrid& Sgrid, int startRow, int
     for (int row = startRow; row < 9; ++row) {
         for (int col = (row == startRow ? startCol : 0); col < 9; ++col) {
             if (Sgrid.grid[row][col] < 0 || Sgrid.grid[row][col] > 9) {
-                throw std::invalid_argument("Некорректное значение в ячейке");
+				std::cerr << "Некорректное значение в ячейке" << std::endl;
             }
             if (Sgrid.grid[row][col] == 0) {
                 return { row, col };
@@ -121,11 +121,32 @@ int Sudoku::RandomNumber() {
 // Создание пустых ячеек для получения решаемой головоломки
 void Sudoku::RemoveRandomNumber(SudokuGrid& Sgrid) {
 	int count = 0;
-	std::cout << "Сколько чисел вы хотите удалить?(Не больше 50) " << std::endl;
+	std::cout << "Сколько чисел вы хотите удалить?(От 10 до 50) " << std::endl;
 	bool flag = true;
 	std::string input;
+
 	while (flag) {
 		getline(std::cin, input);
+
+		// Проверка на пустой ввод
+		if (input.empty()) {
+			std::cerr << "Введите число!" << std::endl;
+			continue;
+		}
+		
+		// Проверка на наличие букв в строке
+		bool hasLetters = false;
+		for (char c : input) {
+			if (std::isalpha(c)) {
+				hasLetters = true;
+				break;
+			}
+		}
+		if (hasLetters) {
+			std::cerr << "Ввод содержит буквы! Допустимы только цифры." << std::endl;
+			continue;
+		}
+
 		// Проверка на наличие точки
 		if (input.find('.') != std::string::npos) {
 			std::cerr << "Дробные числа не допускаются!" << std::endl;
@@ -138,11 +159,15 @@ void Sudoku::RemoveRandomNumber(SudokuGrid& Sgrid) {
 			std::cerr << "Ошибка ввода. Попробуйте снова!" << std::endl;
 			continue;
 		}
-		if (count <= 50 && count >= 1) {
+		catch (std::out_of_range) {
+			std::cerr << "Число выходит за допустимый диапазон!" << std::endl;
+			continue;
+		}
+		if (count <= 50 && count >= 10) {
 			flag = false;
 		}
 		else {
-			std::cerr << "Ошибка! Число должно быть в диапазоне от 1 до 50! " << std::endl;
+			std::cerr << "Ошибка! Число должно быть в диапазоне от 10 до 50! " << std::endl;
 			continue;
 		}
 	}
@@ -230,14 +255,7 @@ bool Sudoku::GenerateSudoku(SudokuGrid& Sgrid) {
 	for (auto& row : Sgrid.grid) {
 		std::fill(row.begin(), row.end(), 0);
 	}
-	// Инициализация генератора случайных чисел только один раз
-	static bool initialized = false;
-	if (!initialized) {
-		srand(time(NULL));
-		initialized = true;
-	}
-
-	// Создаем массив возможных чисел один раз
+	// Создаем массив возможных чисел 
 	std::vector<int> nums = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	std::vector<bool> used(9, false); // Для отслеживания использованных чисел
 
