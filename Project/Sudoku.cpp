@@ -152,7 +152,7 @@ bool Sudoku::CheckGrid(SudokuGrid& Sgrid) {
 
 // Сохранение сетки в файл
 void Sudoku::SaveGrid(SudokuGrid& Sgrid) {
-	std::string filename = "Save.txt";
+	std::string filename = "Project\\Save.txt";
 	std::ofstream file(filename);
 	if (!file.is_open()) {
 		std::cerr << "Ошибка открытия файла " << filename << std::endl;
@@ -164,18 +164,18 @@ void Sudoku::SaveGrid(SudokuGrid& Sgrid) {
 		}
 		file << std::endl;
 	}
-	std::cout << "Судоку сохранён в файл " << filename << std::endl;
+	std::cout << "Судоку сохранён в " << filename << std::endl;
 	file.close();
 }
 
 
 // Загрузка сетки из файла	
 void Sudoku::LoadGrid(SudokuGrid& Sgrid) {
-	std::string filename = "Load.txt";
+	std::string filename = "Project\\Load.txt";
 	std::ifstream file(filename);
 	if (!file.is_open()) {
 		std::cerr << "Ошибка получения " << filename << std::endl;
-		exit(1);
+		menu(Sgrid);
 	}
 	for (int i = 0; i < 9; i++) {
 		for (int j = 0; j < 9; j++) {
