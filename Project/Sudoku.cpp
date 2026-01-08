@@ -120,15 +120,42 @@ int Sudoku::RandomNumber() {
 
 // Создание пустых ячеек для получения решаемой головоломки
 void Sudoku::RemoveRandomNumber(SudokuGrid& Sgrid) {
-	const int count = 30;
+	int count = 0;
+	std::cout << "Сколько чисел вы хотите удалить?(Не больше 50) " << std::endl;
+	bool flag = true;
+	std::string input;
+	while (flag) {
+		getline(std::cin, input);
+		// Проверка на наличие точки
+		if (input.find('.') != std::string::npos) {
+			std::cerr << "Дробные числа не допускаются!" << std::endl;
+			continue;
+		}
+		try {
+			count = stoi(input);
+		}
+		catch (std::invalid_argument) {
+			std::cerr << "Ошибка ввода. Попробуйте снова!" << std::endl;
+			continue;
+		}
+		if (count <= 50 && count >= 1) {
+			flag = false;
+		}
+		else {
+			std::cerr << "Ошибка! Число должно быть в диапазоне от 1 до 50! " << std::endl;
+			continue;
+		}
+	}
 	int cnt = 0;
 	int row = 0;
 	int col = 0;
 	while (cnt != count) {
 		row = RandomNumber();
 		col = RandomNumber();
-		Sgrid.grid[row][col] = 0;
-		++cnt;
+		if (Sgrid.grid[row][col] != 0) {  // Убеждаемся, что ячейка не пустая
+			Sgrid.grid[row][col] = 0;
+			++cnt;
+		}
 	}
 }
 
@@ -164,7 +191,7 @@ void Sudoku::SaveGrid(SudokuGrid& Sgrid) {
 		}
 		file << std::endl;
 	}
-	std::cout << "Судоку сохранён в " << filename << std::endl;
+	std::cout << "Судоку сохранено в " << filename << std::endl;
 	file.close();
 }
 
@@ -183,6 +210,18 @@ void Sudoku::LoadGrid(SudokuGrid& Sgrid) {
 		}
 	}
 	file.close();
+}
+
+//проверка на пустое поле
+bool Sudoku::IsGridEmpty(const SudokuGrid& Sgrid) {
+	for (int row = 0; row < 9; ++row) {
+		for (int col = 0; col < 9; ++col) {
+			if (Sgrid.grid[row][col] != 0) {
+				return false; // Найдена заполненная ячейка — сетка не пуста
+			}
+		}
+	}
+	return true; // Все ячейки равны 0 — сетка пуста
 }
 
 // Генерация полной сетки судоку

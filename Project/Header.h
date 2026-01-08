@@ -29,6 +29,7 @@ struct Sudoku {
 	void SaveGrid(SudokuGrid& Sgrid);
 	void LoadGrid(SudokuGrid& Sgrid);
 	bool GenerateSudoku(SudokuGrid& Sgrid);
+	bool IsGridEmpty(const SudokuGrid& Sgrid);
 };
 void PrintSolvedSudoku(SudokuGrid& grid);
 void menu(SudokuGrid& grid);
