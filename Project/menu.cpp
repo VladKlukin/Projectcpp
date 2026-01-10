@@ -17,9 +17,9 @@ void menu(SudokuGrid& grid) {
         std::cout << "(пустое значение клетки в судоку отмечено точкой)" << std::endl;
         bool flag = true;
         int choice = 0;
-        std::cout << "Введите выбранную опцию: ";
         std::string input;
         while (flag) {
+            std::cout << "Введите выбранную опцию: ";
             getline(std::cin, input);
             // Проверка на пустой ввод
             if (input.empty()) {
@@ -82,10 +82,8 @@ void menu(SudokuGrid& grid) {
             if (!solver.IsGridEmpty(grid)) {
                 if (solver.CheckGrid(grid)) {
                     if (solver.SolveSudoku(grid)) {
+                        std::cout << "Решённое судоку" << std::endl;
                         solver.PrintGrid(grid);
-                    }
-                    else {
-                        std::cerr << "Не удалось решить судоку" << std::endl;
                     }
                 }
                 else {
@@ -95,6 +93,7 @@ void menu(SudokuGrid& grid) {
             else {
                 std::cerr << "Поле пустое" << std::endl;
             }
+            std::cout << std::endl;
             break;
         case 3:
             do {
@@ -116,26 +115,32 @@ void menu(SudokuGrid& grid) {
             std::cout << std::endl;
             break;
         case 5:
-            if (!solver.IsGridEmpty(grid)) {
+            if (solver.CheckGrid(grid)) {
                 solver.SaveGrid(grid);
             }
             else {
-                std::cout << "Поле пустое" << std::endl;
+                std::cerr << "Поле некорректно" << std::endl;
             }
             std::cout << std::endl;
             break;
         case 6:
             solver.LoadGrid(grid);
-            if (!solver.IsGridEmpty(grid)) {
-                std::cout << "Загруженное поле:" << std::endl;
-                solver.PrintGrid(grid);
+            if (solver.Flag) {
+                if (!solver.IsGridEmpty(grid)) {
+                    std::cout << "Загруженное поле:" << std::endl;
+                    solver.PrintGrid(grid);
+                }
+                else {
+                    std::cout << "Поле пустое" << std::endl;
+                }
             }
             else {
-                std::cout << "Поле пустое" << std::endl;
+                solver.Flag = true;
             }
             std::cout << std::endl;
             break;
         case 7:
+            std::cout << "Программа завершила работу." << std::endl;
             exit = false;
             break;
         default:

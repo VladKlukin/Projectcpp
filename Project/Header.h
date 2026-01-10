@@ -5,7 +5,7 @@
 struct SudokuGrid {
 	std::vector<std::vector<int>> grid;
 	SudokuGrid() : grid(9, std::vector<int>(9, 0)) {}//конструктор, который заполняет поле 0
-};
+};	
 
 struct SudokuState {//структура состояний 
 	int row, col;           // координаты ячейки
@@ -19,6 +19,7 @@ struct CellPosition {//координаты пустой клетки
 };
 
 struct Sudoku {
+	bool Flag = true; //флаг для вывода загруженного судоку
 	CellPosition getNextEmptyCell(const SudokuGrid& Sgrid, int startRow = 0, int startCol = 0);
 	bool CanPlace(SudokuGrid& Sgrid, int row, int col, int num);
 	bool SolveSudoku(SudokuGrid& Sgrid);
@@ -31,5 +32,5 @@ struct Sudoku {
 	bool GenerateSudoku(SudokuGrid& Sgrid);
 	bool IsGridEmpty(const SudokuGrid& Sgrid);
 };
-
+	
 void menu(SudokuGrid& grid);

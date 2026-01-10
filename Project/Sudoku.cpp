@@ -5,32 +5,35 @@
 #include <ctime>      
 #include <cstdlib>    
 #include <fstream>
+#include <sstream>
 // Проверка возможности размещения числа в ячейке
 bool Sudoku::CanPlace(SudokuGrid& Sgrid, int row, int col, int num) {
 	// Проверка границ индексов
 	if (row < 0 || row > 8 || col < 0 || col > 8) {
 		std::cerr << "Индексы строки и столбца должны быть в диапазоне 0-8" << std::endl;
+		return false;
 	}
 
 	// Проверка допустимого значения числа
 	if (num < 1 || num > 9) {
 		std::cerr << "Число должно быть в диапазоне 1-9" << std::endl;
+		return false;
 	}
 
-	for (int x = 0; x < 9; x++) {
+	for (int x = 0; x < 9; ++x) {
 		if (Sgrid.grid[row][x] == num) return false;
 	}
 
 	// Проверяем столбец
-	for (int y = 0; y < 9; y++) {
+	for (int y = 0; y < 9; ++y) {
 		if (Sgrid.grid[y][col] == num) return false;
 	}
 
 	// Проверяем блок
 	int startRow = row - row % 3;
 	int startCol = col - col % 3;
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
 			if (Sgrid.grid[startRow + i][startCol + j] == num) return false;
 		}
 	}
@@ -82,6 +85,7 @@ CellPosition Sudoku::getNextEmptyCell(const SudokuGrid& Sgrid, int startRow, int
         for (int col = (row == startRow ? startCol : 0); col < 9; ++col) {
             if (Sgrid.grid[row][col] < 0 || Sgrid.grid[row][col] > 9) {
 				std::cerr << "Некорректное значение в ячейке" << std::endl;
+				return { -1, -1 };
             }
             if (Sgrid.grid[row][col] == 0) {
                 return { row, col };
@@ -160,7 +164,8 @@ void Sudoku::RemoveRandomNumber(SudokuGrid& Sgrid) {
 			continue;
 		}
 		catch (std::out_of_range) {
-			std::cerr << "Число выходит за допустимый диапазон!" << std::endl;
+			std::cerr << "Число выходит за допустимый диапазон!" << std::endl << "Число должно быть в диапазоне от 10 до 50!" << std::endl;
+			std::cout << "Попробуйте снова!" << std::endl;
 			continue;
 		}
 		if (count <= 50 && count >= 10) {
@@ -208,7 +213,7 @@ void Sudoku::SaveGrid(SudokuGrid& Sgrid) {
 	std::ofstream file(filename);
 	if (!file.is_open()) {
 		std::cerr << "Ошибка открытия файла " << filename << std::endl;
-		menu(Sgrid);
+		return;
 	}
 	for (int i = 0; i < 9; i++) {
 		for (int j = 0; j < 9; j++) {
@@ -226,18 +231,72 @@ void Sudoku::LoadGrid(SudokuGrid& Sgrid) {
 	std::string filename = "Load.txt";
 	std::ifstream file(filename);
 	if (!file.is_open()) {
-		std::cerr << "Ошибка получения " << filename << std::endl;
-		menu(Sgrid);
+		std::cerr << "Ошибка открытия файла " << filename << std::endl;
+		Flag = false;
+		return;
 	}
+
+	// 1. Считываем все строки в вектор строк для предварительной проверки
+	std::vector<std::string> lines;
+	std::string line;
+	while (std::getline(file, line)) {
+		lines.push_back(line);
+	}
+	file.close(); // Закрываем файл для повторного чтения
+
+	// 2. Проверка количества строк (должно быть 9)
+	if (lines.size() != 9) {
+		std::cerr << "Ошибка: должно быть 9 строк, найдено " << lines.size() << std::endl;
+		Flag = false;
+		return;
+	}
+
+	// 3. Проверка количества чисел в каждой строке и диапазона значений
+	std::vector<std::vector<int>> tempGrid(9, std::vector<int>(9)); // Временная сетка для проверки
+	for (int i = 0; i < 9; i++) {
+		std::stringstream ss(lines[i]);
+		int num, count = 0;
+		bool hasExtraNumbers = false;
+
+		while (ss >> num) {
+			if (count >= 9) {
+				std::cerr << "Ошибка: в строке " << (i + 1)
+					<< " найдено больше 9 чисел" << std::endl;
+				Flag = false;
+				return;
+			}
+
+			if (num < 0 || num > 9) {
+				std::cerr << "Ошибка: число " << num << " в строке " << (i + 1)
+					<< " вне допустимого диапазона [0–9]" << std::endl;
+				Flag = false;
+				return;
+			}
+			tempGrid[i][count] = num;
+			count++;
+		}
+
+		if (count < 9) {
+			std::cerr << "Ошибка: в строке " << (i + 1) << " только "
+				<< count << " чисел (должно быть 9)" << std::endl;
+			Flag = false;
+			return;
+		}
+	}
+
+	// 4. Если проверка пройдена — заполняем реальную сетку Sgrid
+	file.open(filename); // Открываем файл заново для заполнения сетки
 	for (int i = 0; i < 9; i++) {
 		for (int j = 0; j < 9; j++) {
 			file >> Sgrid.grid[i][j];
 		}
 	}
 	file.close();
+
+	std::cout << "Сетка успешно загружена!" << std::endl;
 }
 
-//проверка на пустое поле
+//проверка на пустое поле	
 bool Sudoku::IsGridEmpty(const SudokuGrid& Sgrid) {
 	for (int row = 0; row < 9; ++row) {
 		for (int col = 0; col < 9; ++col) {
