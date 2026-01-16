@@ -54,7 +54,7 @@ bool Sudoku::SolveSudoku(SudokuGrid& Sgrid) {
 			states.pop_back();
 			if (states.empty()) return false; // нет решений
 
-			// Откатываемся: очищаем ячейку и пробуем следующее число
+			// Откатываемся: очищаем ячейку и пробуем следующее  число
 			Sgrid.grid[curr.row][curr.col] = 0;
 			++states.back().num;
 			continue;
@@ -315,9 +315,7 @@ bool Sudoku::GenerateSudoku(SudokuGrid& Sgrid) {
 		std::fill(row.begin(), row.end(), 0);
 	}
 	// Создаем массив возможных чисел 
-	std::vector<int> nums = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	std::vector<bool> used(9, false); // Для отслеживания использованных чисел
-
+	std::vector<int> nums = { 1, 2, 3, 4, 5, 6, 7, 8, 9 }; 
 	for (int row = 0; row < 9; row++) {
 		for (int col = 0; col < 9; col++) {
 			// Перемешиваем числа вручную
